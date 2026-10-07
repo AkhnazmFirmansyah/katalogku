@@ -24,4 +24,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction \
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
+# Hugging Face Spaces mengarahkan trafik ke port 7860
+ENV PORT=7860
+EXPOSE 7860
+
 CMD ["/start.sh"]
