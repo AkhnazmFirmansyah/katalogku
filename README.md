@@ -1,5 +1,5 @@
 ---
-title: TokoKu API
+title: katalogku
 emoji: 🛒
 sdk: docker
 app_port: 7860
