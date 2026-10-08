@@ -10,9 +10,9 @@ class ProductController extends Controller
     public function index()
     {
         return response()->json([
-        'message' => 'Berhasil mengambil data produk',
-        'data' => []
-    ]);
+            'message' => 'Berhasil mengambil data produk',
+            'data' => $products = Product::all()
+        ]);
     }
 
     public function show($id)
