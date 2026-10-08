@@ -9,7 +9,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return response()->json(Product::all(), 200);
+        return response()->json([
+        'message' => 'Berhasil mengambil data produk',
+        'data' => []
+    ]);
     }
 
     public function show($id)
