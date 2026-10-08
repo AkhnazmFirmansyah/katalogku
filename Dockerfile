@@ -1,10 +1,9 @@
-FROM php:8.4-apache
+FROM php:8.2-cli
 
 # Ekstensi PHP + tools
-RUN apt-get update && apt-get install -y git unzip libpq-dev libzip-dev \
-    && docker-php-ext-install pdo pdo_pgsql pdo_mysql zip \
-    && a2enmod rewrite \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    libpng-dev libonig-dev libxml2-dev zip unzip git \
+    && docker-php-ext-install pdo_mysql mbstring
 
 # Document root -> folder public/ dan izinkan .htaccess Laravel
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
@@ -14,18 +13,16 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /app
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction \
-    && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer install --no-dev --optimize-autoloader
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 # Hugging Face Spaces mengarahkan trafik ke port 7860
 ENV PORT=7860
-EXPOSE 7860
-
-CMD ["/start.sh"]
+EXPOSE 8080
+CMD php artisan config:cache && php artisan migrate --force && php -S 0.0.0.0:8080 -t public
